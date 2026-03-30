@@ -65,13 +65,24 @@ class Courses:
         with open(prereq_path, 'r') as f:
             self.prereq_data: Dict[str, Prereq] = json.load(f)
     
-    def get_course(self, code: str, course: int) -> Course | None:
+    def get_course(self, code: str, course: int, strict: bool = False) -> Course | None:
         try:
             code_list = self.course_data[code.upper()]
             course_data = code_list[course]
             return Course(course_data, self.prereq_data)
         except KeyError:
-            return None
+            # Assume AP/Transfer Credit
+            if strict:
+                return None
+            else:
+                return Course({
+                        'id': code + '-' + str(course),
+                        'crse': course,
+                        'title': 'ASSUMED TRANSFER',
+                        'subj': code,
+                        'sections': [{'attribute': '', 'credMax': 4.0, 'credMin': 4.0}]
+                    },
+                    {code + ' ' + str(course): {'title': '', 'prereqs': []}})
 
 if __name__ == "__main__":
     c = Courses('./src/courses.json', './src/prereq_graph.json')
