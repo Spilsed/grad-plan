@@ -42,9 +42,11 @@ class Course:
         self.credit_min: float = section['credMin']
 
         self.prereqs: List[str] = [x.replace(' ', '-') for x in prereq_data[self.id.replace('-', ' ')]['prereqs']]
-        print(self.prereqs)
     
     def __str__(self) -> str:
+        return f'{self.id} [{self.title}]'
+
+    def __repr__(self) -> str:
         return f'{self.id} [{self.title}]'
 
 class Courses:
